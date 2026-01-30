@@ -1,18 +1,22 @@
 # Cryptocurrency Wallet & Trading Engine Simulator
 
-A production-grade cryptocurrency wallet and trading engine simulator built with Spring Boot 3.3+, Java 21, Kafka, and PostgreSQL. This is a **simulation system** (NOT connected to real blockchain or exchanges) designed to demonstrate:
+> 🚀 **Full-stack Java 21 + Spring Boot + React dashboard** simulating wallet, order book, and real-time updates via Kafka. Load-tested with Gatling.
 
-> 📚 **[View Full Documentation](./docs/README.md)** | 📄 **[Professional Profile](./PROFILE.md)**
+A production-grade cryptocurrency wallet and trading engine simulator with **complete React frontend dashboard**. This is a **simulation system** (NOT connected to real blockchain or exchanges) designed to demonstrate enterprise-level full-stack engineering skills.
+
+> 📚 **[View Full Documentation](./docs/README.md)** | 📄 **[Professional Profile](./PROFILE.md)** | 🎨 **[Frontend Guide](./SETUP-FRONTEND.md)**
 
 - **Atomic balance updates** with optimistic locking
 - **Event-driven architecture** via Apache Kafka
 - **Thread-safe order matching engine** with price-time priority
+- **React dashboard** with real-time order book, wallet management, and trading interface
 - **Basic risk management** (balance checks, exposure limits)
-- **Dockerized infrastructure** (PostgreSQL + Kafka + App)
+- **Dockerized infrastructure** (PostgreSQL + Kafka + App + Frontend)
 - **Load testing** with Gatling
 
 ## Tech Stack
 
+### Backend
 - **Java 21** with modern language features (records, pattern matching)
 - **Spring Boot 3.3.5** (latest stable)
 - **Spring Data JPA** + **PostgreSQL 16**
@@ -22,7 +26,18 @@ A production-grade cryptocurrency wallet and trading engine simulator built with
 - **MapStruct** for DTO mapping
 - **JUnit 5** + **Testcontainers** for integration tests
 - **Gatling** for load/performance testing
+
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Material-UI (MUI)** for modern UI components
+- **React Query** for data fetching and caching
+- **Axios** for API calls
+
+### Infrastructure
 - **Docker Compose** for local development
+- **PostgreSQL** for persistence
+- **Kafka** for event streaming
 
 ## Architecture
 
@@ -47,6 +62,7 @@ A production-grade cryptocurrency wallet and trading engine simulator built with
 - Java 21+
 - Maven 3.9+
 - Docker & Docker Compose
+- Node.js 18+ (for frontend)
 
 ### Running Locally
 
@@ -60,7 +76,7 @@ A production-grade cryptocurrency wallet and trading engine simulator built with
    docker-compose logs -f
    ```
 
-3. **Build and run the application**:
+3. **Build and run the backend**:
    ```bash
    mvn clean package
    mvn spring-boot:run
@@ -71,10 +87,27 @@ A production-grade cryptocurrency wallet and trading engine simulator built with
    docker-compose up --build app
    ```
 
-4. **Verify the application**:
+4. **Start the React frontend** (in a new terminal):
    ```bash
-   curl http://localhost:8080/actuator/health
+   cd frontend
+   npm install
+   npm run dev
    ```
+
+5. **Access the dashboard**:
+   - **Frontend Dashboard**: http://localhost:3000
+   - **Backend API**: http://localhost:8080
+   - **Health Check**: http://localhost:8080/actuator/health
+   - **API Docs**: http://localhost:8080/api/v1 (see [API Documentation](./docs/api.md))
+
+### Quick Demo
+
+1. Open http://localhost:3000
+2. Click **"Start Trading"** to create a demo user
+3. Navigate to **Wallet** and deposit funds (e.g., 10,000 USDT)
+4. Go to **Trading** and place a LIMIT order (e.g., BUY 0.1 BTC at 50,000 USDT)
+5. View your orders in the **Orders** page
+6. Watch the **Dashboard** for real-time order book updates
 
 ### API Endpoints
 
@@ -167,9 +200,9 @@ mvn verify  # Runs integration tests in integration-test phase
 ## Project Structure
 
 ```
-src/
-├── main/
-│   ├── java/com/example/cryptoengine/
+crypto-wallet-engine/
+├── src/                           # Backend (Spring Boot)
+│   ├── main/java/com/example/cryptoengine/
 │   │   ├── application/          # Use cases, DTOs, mappers
 │   │   ├── controller/            # REST controllers
 │   │   ├── domain/                # Domain entities, events, value objects
@@ -179,39 +212,41 @@ src/
 │   │   └── service/               # Business logic services
 │   └── resources/
 │       └── application.properties  # Configuration
-└── test/
-    ├── java/                      # Unit & integration tests
-    └── gatling/                   # Gatling load test scenarios
+├── frontend/                      # React Dashboard
+│   ├── src/
+│   │   ├── api/                   # API client & types
+│   │   ├── components/           # Reusable components
+│   │   ├── pages/                 # Page components
+│   │   └── hooks/                 # Custom hooks
+│   ├── package.json
+│   └── vite.config.ts
+├── src/test/                      # Tests
+│   ├── java/                      # Unit & integration tests (65+ tests)
+│   └── gatling/                   # Gatling load test scenarios
+├── docs/                          # Documentation
+├── docker-compose.yml             # Infrastructure setup
+└── pom.xml                        # Maven configuration
 ```
 
 ## Key Features
 
-### Atomic Balance Updates
-- Uses JPA optimistic locking (`@Version`) to prevent concurrent modification
-- Database transactions ensure ACID properties
-- Prevents double-spend and overdraft scenarios
+### Backend Features
+- ✅ **Atomic Balance Updates**: JPA optimistic locking (`@Version`) prevents concurrent modification
+- ✅ **Event-Driven Architecture**: Kafka-based event streaming for real-time state propagation
+- ✅ **Thread-Safe Matching Engine**: In-memory order book with `ConcurrentSkipListMap` and read-write locks
+- ✅ **Risk Management**: Pre-trade validation, balance checks, and exposure limits
+- ✅ **Idempotency**: Support for idempotency keys to prevent duplicate operations
+- ✅ **RESTful APIs**: Versioned endpoints with comprehensive error handling
+- ✅ **Comprehensive Testing**: 65+ unit tests with Testcontainers integration tests
 
-### Event-Driven Architecture
-- Domain events published to Kafka topics:
-  - `order-placed-events`
-  - `order-matched-events`
-  - `trade-executed-events`
-  - `balance-updated-events`
-- Consumers update read models and send real-time notifications (simulated via logs)
-
-### Thread-Safe Matching Engine
-- In-memory order book using `ConcurrentSkipListMap`
-- Read-write locks for order book operations
-- Price-time priority matching (best price first, then FIFO)
-
-### Risk Management
-- Pre-trade balance validation
-- Exposure limit checks (configurable max exposure in USDT)
-- Simulated price feed for risk calculations
-
-### Idempotency
-- Orders support idempotency keys to prevent duplicate submissions
-- Idempotency key checked before order creation
+### Frontend Features
+- ✅ **Real-time Dashboard**: Live order book, recent trades, and wallet balances
+- ✅ **Trading Interface**: Place LIMIT and MARKET orders with intuitive UI
+- ✅ **Wallet Management**: View balances and deposit funds (USDT, BTC, ETH)
+- ✅ **Order Management**: View, filter, and cancel orders with status tracking
+- ✅ **Auto-refresh**: Real-time updates via polling (WebSocket ready)
+- ✅ **Modern UI**: Material-UI components with dark theme
+- ✅ **Responsive Design**: Mobile-friendly with bottom navigation
 
 ## Configuration
 
@@ -235,29 +270,32 @@ Key configuration in `application.properties`:
 - Kafka producers use idempotent configuration
 - Optimistic locking reduces lock contention vs pessimistic locking
 
-## Limitations (Simulation)
+## Limitations & Future Enhancements
 
-- No real blockchain integration
-- Simple price feed (fixed prices, can be updated)
+### Current Limitations
 - In-memory order book (not distributed)
 - Basic risk checks (not production-grade)
-- No WebSocket for real-time updates (events logged only)
+- Frontend uses polling instead of WebSocket (WebSocket hook ready for integration)
+- No authentication/authorization (demo mode)
+- No real blockchain integration
 
-## Future Enhancements
-
-- WebSocket support for real-time order book updates
+### Future Enhancements
+- WebSocket support for real-time order book updates (hook already implemented)
 - Distributed order book (Redis/Kafka Streams)
 - More sophisticated risk engine
-- Order history and analytics
+- Order history analytics and charts
 - JWT authentication
 - Rate limiting
+- Multi-user support with proper session management
 
 ## 📚 Documentation
 
 Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
+- **[Quick Start Guide](./docs/quick-start.md)** - Get up and running in minutes
 - **[Architecture Overview](./docs/architecture.md)** - System design and component interactions
 - **[API Documentation](./docs/api.md)** - Complete REST API reference with examples
+- **[Frontend Documentation](./docs/frontend.md)** - React dashboard features and development guide
 - **[Setup Guide](./docs/setup.md)** - Installation and configuration instructions
 - **[Design Decisions](./docs/design-decisions.md)** - Key architectural choices and rationale
 - **[Testing Guide](./docs/testing.md)** - Testing strategy and load testing
@@ -265,13 +303,16 @@ Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 - **[Kafka Events](./docs/kafka-events.md)** - Event-driven architecture documentation
 - **[Risk Engine](./docs/risk-engine.md)** - Risk management system documentation
 
+**Frontend Setup**: See [SETUP-FRONTEND.md](./SETUP-FRONTEND.md) for detailed frontend setup instructions.
+
 ## 👤 Professional Profile
 
-This project demonstrates production-grade backend engineering skills. See **[PROFILE.md](./PROFILE.md)** for a detailed professional profile highlighting:
+This project demonstrates production-grade **full-stack engineering skills**. See **[PROFILE.md](./PROFILE.md)** for a detailed professional profile highlighting:
 - Technical achievements and challenges solved
-- Architecture and design patterns
+- Architecture and design patterns (backend + frontend)
 - Performance metrics and scalability considerations
 - Production-ready features and best practices
+- Modern React dashboard with real-time updates
 
 ## License
 

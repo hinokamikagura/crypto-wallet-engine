@@ -7,6 +7,7 @@ Welcome to the Cryptocurrency Wallet & Trading Engine Simulator documentation.
 - **[Quick Start Guide](./quick-start.md)** - Get up and running in minutes
 - **[Architecture Overview](./architecture.md)** - System architecture, design patterns, and technical decisions
 - **[API Documentation](./api.md)** - Complete REST API reference with examples
+- **[Frontend Documentation](./frontend.md)** - React dashboard documentation and features
 - **[Setup Guide](./setup.md)** - Step-by-step installation and configuration
 - **[Design Decisions](./design-decisions.md)** - Key architectural choices and rationale
 - **[Testing Guide](./testing.md)** - Testing strategy, unit tests, integration tests, and load testing

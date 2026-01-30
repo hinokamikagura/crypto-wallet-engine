@@ -76,5 +76,18 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crypto-wallet-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:8080/api/v1
+    depends_on:
+      - app
+    restart: unless-stopped
+
 volumes:
   postgres_data:

@@ -1,0 +1,38 @@
+.app-container {
+  min-height: 100vh;
+  background: #0a0e27;
+}
+
+.card {
+  background: #151932;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #2a3a5c;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: #00d4ff;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1);
+}
+
+.order-book-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 2px 0;
+  transition: background 0.2s;
+}
+
+.order-book-row:hover {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.bid-row {
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.ask-row {
+  background: rgba(255, 0, 0, 0.05);
+}
